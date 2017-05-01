@@ -12,7 +12,7 @@ func inc(c *Client) {
 }
 
 func main() {
-	cfg := &Config{address: "localhost:8125", prefix: "prefix"}
+	cfg := &Config{address: "localhost:8125", prefix: "prefix", socket_ttl: 1}
 	c, err := NewClient(cfg)
 	if err != nil {
 		fmt.Printf("Error: %v", err)
