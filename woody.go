@@ -49,6 +49,10 @@ func (c *Client) socketExpired() bool {
 }
 
 func (c *Client) createSocket() {
+	if c.socket != nil {
+		c.Close()
+	}
+
 	ra, err := net.ResolveUDPAddr("udp", c.cfg.address)
 
 	if err != nil {
