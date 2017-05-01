@@ -44,7 +44,6 @@ func (c *Client) ensureSocket() {
 }
 
 func (c *Client) socketExpired() bool {
-	fmt.Println(time.Now().Unix(), c.socket_expiry)
 	return time.Now().Unix() > c.socket_expiry
 }
 
