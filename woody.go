@@ -66,7 +66,15 @@ func (c *Client) createSocket() {
 	c.socket_expiry = time.Now().Unix() + c.cfg.socket_ttl
 }
 
+func (c *Client) publish(s string) {
+	select {
+	case c.channel <- s:
+	default:
+		fmt.Println("Error")
+	}
+}
+
 func (c *Client) Increment(metric string) {
 	s := fmt.Sprintf("%s.%s", c.cfg.prefix, metric)
-	c.channel <- s
+	c.publish(s)
 }
