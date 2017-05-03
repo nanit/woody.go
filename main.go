@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-import "os"
 import "time"
 
 func inc(c *Client) {
@@ -13,12 +11,10 @@ func inc(c *Client) {
 
 func main() {
 	cfg := &Config{address: "localhost:8125", prefix: "prefix", socket_ttl: 1}
-	c, err := NewClient(cfg)
-	if err != nil {
-		fmt.Printf("Error: %v", err)
-		os.Exit(1)
-	}
+	c := NewClient(cfg)
 
+	go inc(c)
+	go inc(c)
 	go inc(c)
 	time.Sleep(time.Second * 5)
 }
