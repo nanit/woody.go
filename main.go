@@ -1,8 +1,9 @@
 package main
 
 import "time"
+import "github.com/nanit/woody.go/statsd"
 
-func inc(c *Client) {
+func inc(c *statsd.Client) {
 	for {
 		c.Increment("metric")
 		time.Sleep(time.Millisecond * 300)
@@ -10,8 +11,8 @@ func inc(c *Client) {
 }
 
 func main() {
-	cfg := &Config{address: "localhost:8125", prefix: "prefix", socket_ttl: 1}
-	c := NewClient(cfg)
+	cfg := &statsd.Config{Address: "localhost:8125", Prefix: "prefix", SocketTTL: 1}
+	c := statsd.NewClient(cfg)
 
 	go inc(c)
 	go inc(c)

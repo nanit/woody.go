@@ -8,9 +8,9 @@ import (
 )
 
 type Config struct {
-	address    string
-	prefix     string
-	socket_ttl int64
+	Address   string
+	Prefix    string
+	SocketTTL int64
 }
 
 type Client struct {
@@ -22,8 +22,8 @@ type Client struct {
 
 func NewClient(cfg *Config) *Client {
 	channel := make(chan string)
-	if cfg.socket_ttl == 0 {
-		cfg.socket_ttl = 600
+	if cfg.SocketTTL == 0 {
+		cfg.SocketTTL = 600
 	}
 	client := &Client{cfg: cfg, channel: channel}
 	go client.sendUDP()
@@ -56,9 +56,9 @@ func (c *Client) createSocket() error {
 		c.socket.Close()
 	}
 
-	ra, err := net.ResolveUDPAddr("udp", c.cfg.address)
+	ra, err := net.ResolveUDPAddr("udp", c.cfg.Address)
 	if err != nil {
-		fmt.Printf("Error resolving address %s: %v", c.cfg.address, err)
+		fmt.Printf("Error resolving address %s: %v", c.cfg.Address, err)
 		return err
 	}
 	conn, err := net.DialUDP("udp", nil, ra)
@@ -69,7 +69,7 @@ func (c *Client) createSocket() error {
 	}
 
 	c.socket = conn
-	c.socket_expiry = time.Now().Unix() + c.cfg.socket_ttl
+	c.socket_expiry = time.Now().Unix() + c.cfg.SocketTTL
 	return nil
 }
 
@@ -83,6 +83,6 @@ func (c *Client) publish(s string) error {
 }
 
 func (c *Client) Increment(metric string) error {
-	s := fmt.Sprintf("%s.%s", c.cfg.prefix, metric)
+	s := fmt.Sprintf("%s.%s", c.cfg.Prefix, metric)
 	return c.publish(s)
 }
