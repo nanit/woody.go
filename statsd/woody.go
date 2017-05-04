@@ -26,17 +26,24 @@ func NewClient(cfg *Config) *Client {
 		cfg.SocketTTL = 600
 	}
 	client := &Client{cfg: cfg, channel: channel}
-	go client.sendUDP()
+	go client.udpPublisher()
 	return client
 }
 
-func (c *Client) sendUDP() {
+func (c *Client) udpPublisher() {
 	for {
 		metric := <-c.channel
 		err := c.ensureSocket()
 		if err == nil {
+			fmt.Printf("published %s\n", metric)
 			fmt.Fprintln(c.socket, metric)
 		}
+	}
+}
+
+func (c *Client) closeSocket() {
+	if c.socket != nil {
+		c.socket.Close()
 	}
 }
 
@@ -52,9 +59,7 @@ func (c *Client) socketExpired() bool {
 }
 
 func (c *Client) createSocket() error {
-	if c.socket != nil {
-		c.socket.Close()
-	}
+	c.closeSocket()
 
 	ra, err := net.ResolveUDPAddr("udp", c.cfg.Address)
 	if err != nil {
@@ -82,7 +87,33 @@ func (c *Client) publish(s string) error {
 	}
 }
 
-func (c *Client) Increment(metric string) error {
-	s := fmt.Sprintf("%s.%s:1|c", c.cfg.Prefix, metric)
+func (c *Client) prefix(metric string) string {
+	if len(c.cfg.Prefix) > 0 {
+		return fmt.Sprintf("%s.%s", c.cfg.Prefix, metric)
+	} else {
+		return metric
+	}
+}
+
+func (c *Client) Increment(metric string, val int32) error {
+	s := fmt.Sprintf("%s:%v|c", c.prefix(metric), val)
 	return c.publish(s)
+}
+
+func (c *Client) Inc(metric string) error {
+	return c.Increment(metric, 1)
+}
+
+func (c *Client) Gauge(metric string, val int32) error {
+	s := fmt.Sprintf("%s:%v|g", c.prefix(metric), val)
+	return c.publish(s)
+}
+
+func (c *Client) Timing(metric string, ms int32) error {
+	s := fmt.Sprintf("%s:%v|ms", c.prefix(metric), ms)
+	return c.publish(s)
+}
+
+func (c *Client) Close() {
+	c.closeSocket()
 }

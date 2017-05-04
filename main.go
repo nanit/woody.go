@@ -1,17 +1,17 @@
 package main
 
 import "time"
-import "github.com/nanit/woody.go/statsd"
+import "./statsd"
 
 func inc(c *statsd.Client) {
 	for {
-		c.Increment("go.metric")
+		c.Timing("go.metric", 111)
 		time.Sleep(time.Millisecond * 300)
 	}
 }
 
 func main() {
-	cfg := &statsd.Config{Address: "statsd:8125", Prefix: "test", SocketTTL: 10}
+	cfg := &statsd.Config{Address: "localhost:8125", Prefix: "test", SocketTTL: 10}
 	c := statsd.NewClient(cfg)
 
 	go inc(c)
