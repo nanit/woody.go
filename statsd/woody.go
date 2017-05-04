@@ -95,7 +95,7 @@ func (c *Client) prefix(metric string) string {
 	}
 }
 
-func (c *Client) Increment(metric string, val int32) error {
+func (c *Client) Increment(metric string, val int) error {
 	s := fmt.Sprintf("%s:%v|c", c.prefix(metric), val)
 	return c.publish(s)
 }
@@ -104,12 +104,12 @@ func (c *Client) Inc(metric string) error {
 	return c.Increment(metric, 1)
 }
 
-func (c *Client) Gauge(metric string, val int32) error {
+func (c *Client) Gauge(metric string, val int) error {
 	s := fmt.Sprintf("%s:%v|g", c.prefix(metric), val)
 	return c.publish(s)
 }
 
-func (c *Client) Timing(metric string, ms int32) error {
+func (c *Client) Timing(metric string, ms int) error {
 	s := fmt.Sprintf("%s:%v|ms", c.prefix(metric), ms)
 	return c.publish(s)
 }
