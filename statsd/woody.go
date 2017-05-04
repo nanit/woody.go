@@ -21,7 +21,7 @@ type Client struct {
 }
 
 func NewClient(cfg *Config) *Client {
-	channel := make(chan string)
+	channel := make(chan string, 100)
 	if cfg.SocketTTL == 0 {
 		cfg.SocketTTL = 600
 	}
@@ -33,10 +33,8 @@ func NewClient(cfg *Config) *Client {
 func (c *Client) udpPublisher() {
 	for {
 		metric := <-c.channel
-		fmt.Printf("received %s\n", metric)
 		err := c.ensureSocket()
 		if err == nil {
-			fmt.Printf("published %s\n", metric)
 			fmt.Fprintln(c.socket, metric)
 		}
 	}
@@ -84,6 +82,7 @@ func (c *Client) publish(s string) error {
 	case c.channel <- s:
 		return nil
 	default:
+		fmt.Println("WOODY_ERROR Cannot publish to channel")
 		return errors.New("WOODY_ERROR Cannot publish to channel")
 	}
 }
@@ -106,7 +105,6 @@ func (c *Client) Inc(metric string) error {
 }
 
 func (c *Client) Gauge(metric string, val int) error {
-	fmt.Printf("Gauge %s %v\n", metric, val)
 	s := fmt.Sprintf("%s:%v|g", c.prefix(metric), val)
 	return c.publish(s)
 }
