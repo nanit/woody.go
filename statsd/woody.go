@@ -33,6 +33,7 @@ func NewClient(cfg *Config) *Client {
 func (c *Client) udpPublisher() {
 	for {
 		metric := <-c.channel
+		fmt.Printf("received %s\n", metric)
 		err := c.ensureSocket()
 		if err == nil {
 			fmt.Printf("published %s\n", metric)
@@ -63,13 +64,13 @@ func (c *Client) createSocket() error {
 
 	ra, err := net.ResolveUDPAddr("udp", c.cfg.Address)
 	if err != nil {
-		fmt.Printf("Error resolving address %s: %v", c.cfg.Address, err)
+		fmt.Printf("WOODY_ERROR resolving address %s: %v", c.cfg.Address, err)
 		return err
 	}
 	conn, err := net.DialUDP("udp", nil, ra)
 
 	if err != nil {
-		fmt.Printf("Error creating socket: ", err)
+		fmt.Printf("WOODY_ERROR creating socket: ", err)
 		return err
 	}
 
@@ -83,7 +84,7 @@ func (c *Client) publish(s string) error {
 	case c.channel <- s:
 		return nil
 	default:
-		return errors.New("Cannot publish to channel")
+		return errors.New("WOODY_ERROR Cannot publish to channel")
 	}
 }
 
@@ -105,6 +106,7 @@ func (c *Client) Inc(metric string) error {
 }
 
 func (c *Client) Gauge(metric string, val int) error {
+	fmt.Printf("Gauge %s %v\n", metric, val)
 	s := fmt.Sprintf("%s:%v|g", c.prefix(metric), val)
 	return c.publish(s)
 }

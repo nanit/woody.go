@@ -5,7 +5,7 @@ import "./statsd"
 
 func inc(c *statsd.Client) {
 	for {
-		c.Timing("go.metric", 111)
+		c.Gauge("go.metric", 111)
 		time.Sleep(time.Millisecond * 300)
 	}
 }
