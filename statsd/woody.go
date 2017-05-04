@@ -83,6 +83,6 @@ func (c *Client) publish(s string) error {
 }
 
 func (c *Client) Increment(metric string) error {
-	s := fmt.Sprintf("%s.%s", c.cfg.Prefix, metric)
+	s := fmt.Sprintf("%s.%s:1|c", c.cfg.Prefix, metric)
 	return c.publish(s)
 }
