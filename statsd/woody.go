@@ -62,13 +62,13 @@ func (c *Client) createSocket() error {
 
 	ra, err := net.ResolveUDPAddr("udp", c.cfg.Address)
 	if err != nil {
-		fmt.Printf("WOODY_ERROR resolving address %s: %v", c.cfg.Address, err)
+		fmt.Printf("WOODY_ERROR resolving address %s: %v\n", c.cfg.Address, err)
 		return err
 	}
 	conn, err := net.DialUDP("udp", nil, ra)
 
 	if err != nil {
-		fmt.Printf("WOODY_ERROR creating socket: ", err)
+		fmt.Printf("WOODY_ERROR creating socket: \n", err)
 		return err
 	}
 
