@@ -68,7 +68,7 @@ func (c *Client) createSocket() error {
 	conn, err := net.DialUDP("udp", nil, ra)
 
 	if err != nil {
-		fmt.Printf("WOODY_ERROR creating socket: \n", err)
+		fmt.Printf("WOODY_ERROR creating socket: %s\n", err)
 		return err
 	}
 
